@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Polyline, Marker, Popup, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Polyline,
+  Marker,
+  Popup,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
 
-const createIcon = (color) => L.divIcon({
-  html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #000;"></div>`,
-  className: 'custom-marker-icon',
-  iconSize: [20, 20],
-  iconAnchor: [10, 10]
-});
+const createIcon = (color) =>
+  L.divIcon({
+    html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #000;"></div>`,
+    className: "custom-marker-icon",
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  });
 
 function haversineMiles([lat1, lon1], [lat2, lon2]) {
   const toRad = (x) => (x * Math.PI) / 180;
@@ -16,8 +24,10 @@ function haversineMiles([lat1, lon1], [lat2, lon2]) {
   const dLon = toRad(lon2 - lon1);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -31,7 +41,13 @@ const FitBounds = ({ positions }) => {
   return null;
 };
 
-const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], routeDistance = 0 }) => {
+const MapView = ({
+  path = [],
+  waypoints = [],
+  fuelStops = [],
+  restStops = [],
+  routeDistance = 0,
+}) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -71,7 +87,7 @@ const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], ro
     for (let i = 1; i < cumulative.length; i++) {
       if (cumulative[i] >= mile) {
         const prev = cumulative[i - 1];
-        const ratio = (mile - prev) / ((cumulative[i] - prev) || 1);
+        const ratio = (mile - prev) / (cumulative[i] - prev || 1);
         const lat = path[i - 1][0] + ratio * (path[i][0] - path[i - 1][0]);
         const lon = path[i - 1][1] + ratio * (path[i][1] - path[i - 1][1]);
         return [lat, lon];
@@ -84,36 +100,53 @@ const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], ro
     const mile = fs.mile_marker || 0;
     return {
       ...fs,
-      coord: findPointAtMile(mile)
+      coord: findPointAtMile(mile),
     };
   });
 
   const restMarkers = (restStops || []).map((rs) => ({
     ...rs,
-    coord: findPointAtMile(rs.mile_marker || 0)
+    coord: findPointAtMile(rs.mile_marker || 0),
   }));
 
   const center = path[0];
 
   return (
     <div className="glass-card rounded-xl p-4 mb-6 hover:shadow-xl transition-shadow duration-300">
-                        <div><br></br></div>
-<div className="flex items-center justify-between mb-4">
+      <div>
+        <br></br>
+      </div>
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-gray-800">Route Map</h3>
         <div className="text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
-          Total Distance: <strong className="text-blue-600">{routeDistance.toFixed(1)} miles</strong>
-                          <div><br></br></div>
-</div>
+          Total Distance:{" "}
+          <strong className="text-blue-600">
+            {routeDistance.toFixed(1)} miles
+          </strong>
+          <div>
+            <br></br>
+          </div>
+        </div>
       </div>
       <div
         style={{ height: window.innerWidth < 768 ? 250 : 300, width: "80%" }}
-        className={`rounded-lg overflow-hidden shadow-inner transition-all duration-500 fade-in ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+        className={`rounded-lg overflow-hidden shadow-inner transition-all duration-500 fade-in ${isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
       >
-        <MapContainer center={center} zoom={6} style={{ height: "100%", width: "100%" }}>
+        <MapContainer
+          center={center}
+          zoom={6}
+          style={{ height: "100%", width: "100%" }}
+        >
           <FitBounds positions={path} />
-          <TileLayer attribution='© OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <TileLayer
+            attribution="© OpenStreetMap"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
-          <Polyline positions={path} pathOptions={{ color: "#2563EB", weight: 6, opacity: 0.95 }} />
+          <Polyline
+            positions={path}
+            pathOptions={{ color: "#2563EB", weight: 6, opacity: 0.95 }}
+          />
 
           {/* Markers: Start and Drop Off */}
           <Marker position={markers[0]} icon={createIcon("#0ea5e9")}>
@@ -134,10 +167,15 @@ const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], ro
 
           {/* Fuel stops: orange */}
           {fuelMarkers.map((f, i) => (
-            <Marker key={`fuel-${i}`} position={f.coord} icon={createIcon("#f97316")}>
+            <Marker
+              key={`fuel-${i}`}
+              position={f.coord}
+              icon={createIcon("#f97316")}
+            >
               <Popup className="custom-popup">
                 <div className="p-2">
-                  <strong className="text-orange-600">Fuel Stop</strong><br />
+                  <strong className="text-orange-600">Fuel Stop</strong>
+                  <br />
                   Mile: {f.mile_marker}
                 </div>
               </Popup>
@@ -149,22 +187,36 @@ const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], ro
             <Marker
               key={`rest-${i}`}
               position={r.coord}
-              icon={createIcon(r.type === "SLEEPER_BERTH" ? "#10B981" : "#9CA3AF")}
+              icon={createIcon(
+                r.type === "SLEEPER_BERTH" ? "#10B981" : "#9CA3AF",
+              )}
             >
               <Popup className="custom-popup">
                 <div className="p-2">
-                  <strong className={r.type === "SLEEPER_BERTH" ? "text-green-600" : "text-gray-600"}>
-                    {r.type === "SLEEPER_BERTH" ? "Sleeper Berth" : "Off Duty Rest"}
-                  </strong><br />
-                  Day: {r.day} | Duration: {r.duration} hr<br />
+                  <strong
+                    className={
+                      r.type === "SLEEPER_BERTH"
+                        ? "text-green-600"
+                        : "text-gray-600"
+                    }
+                  >
+                    {r.type === "SLEEPER_BERTH"
+                      ? "Sleeper Berth"
+                      : "Off Duty Rest"}
+                  </strong>
+                  <br />
+                  Day: {r.day} | Duration: {r.duration} hr
+                  <br />
                   Mile: {r.mile_marker}
                 </div>
               </Popup>
             </Marker>
           ))}
         </MapContainer>
-      </div>                  <div><br></br></div>
-
+      </div>{" "}
+      <div>
+        <br></br>
+      </div>
     </div>
   );
 };

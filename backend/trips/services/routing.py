@@ -1,8 +1,6 @@
 import requests
 
-HEADERS = {
-    "User-Agent": "tripcop-eld-planner"
-}
+HEADERS = {"User-Agent": "tripcop-eld-planner"}
 
 
 def geocode_location(location):
@@ -25,7 +23,9 @@ def calculate_route(start, pickup, dropoff):
     pickup_lat, pickup_lon = geocode_location(pickup)
     drop_lat, drop_lon = geocode_location(dropoff)
 
-    coordinates = f"{start_lon},{start_lat};{pickup_lon},{pickup_lat};{drop_lon},{drop_lat}"
+    coordinates = (
+        f"{start_lon},{start_lat};{pickup_lon},{pickup_lat};{drop_lon},{drop_lat}"
+    )
     osrm_url = f"https://router.project-osrm.org/route/v1/driving/{coordinates}"
     params = {"overview": "full", "geometries": "geojson"}
 
@@ -56,7 +56,12 @@ def calculate_route(start, pickup, dropoff):
                 [drop_lat, drop_lon],
             ]
 
-        return round(distance_miles, 2), round(duration_hours, 2), path, waypoints_coords
+        return (
+            round(distance_miles, 2),
+            round(duration_hours, 2),
+            path,
+            waypoints_coords,
+        )
 
     except Exception as e:
         print("OSRM failed:", e)
@@ -69,22 +74,33 @@ def calculate_route(start, pickup, dropoff):
 
         # simple haversine distance for estimation
         from math import radians, sin, cos, sqrt, atan2
+
         def hav(lat1, lon1, lat2, lon2):
             R = 3958.8
             dlat = radians(lat2 - lat1)
             dlon = radians(lon2 - lon1)
-            a = sin(dlat/2)**2 + cos(radians(lat1))*cos(radians(lat2))*sin(dlon/2)**2
-            c = 2 * atan2(sqrt(a), sqrt(1-a))
+            a = (
+                sin(dlat / 2) ** 2
+                + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
+            )
+            c = 2 * atan2(sqrt(a), sqrt(1 - a))
             return R * c
 
-        distance_miles = hav(start_lat, start_lon, pickup_lat, pickup_lon) + hav(pickup_lat, pickup_lon, drop_lat, drop_lon)
+        distance_miles = hav(start_lat, start_lon, pickup_lat, pickup_lon) + hav(
+            pickup_lat, pickup_lon, drop_lat, drop_lon
+        )
         duration_hours = distance_miles / 55.0 if distance_miles > 0 else 0.0
 
-        return round(distance_miles, 2), round(duration_hours, 2), path, [
-            [start_lat, start_lon],
-            [pickup_lat, pickup_lon],
-            [drop_lat, drop_lon],
-        ]
+        return (
+            round(distance_miles, 2),
+            round(duration_hours, 2),
+            path,
+            [
+                [start_lat, start_lon],
+                [pickup_lat, pickup_lon],
+                [drop_lat, drop_lon],
+            ],
+        )
 
 
 def calculate_fuel_stops(distance_miles):

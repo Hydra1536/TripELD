@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Trip(models.Model):
     # Location inputs from user
     current_location = models.CharField(max_length=255)

@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import timedelta
 
-from .models import Trip
 from .serializers import TripSerializer
 from .services.routing import calculate_route, calculate_fuel_stops
 from .services.hos_calculator import calculate_hos
+
 
 class TripCreateView(APIView):
     def post(self, request):
@@ -26,7 +26,7 @@ class TripCreateView(APIView):
             total_trip_hours=duration,
             total_distance_miles=distance,
             current_cycle_used_hours=trip.current_cycle_used_hours,
-            fuel_stops=fuel_stops
+            fuel_stops=fuel_stops,
         )
 
         avg_speed = (distance / duration) if duration > 0 else 55.0
@@ -53,7 +53,12 @@ class TripCreateView(APIView):
             else:
                 _to = "Enroute"
 
-            totals = {"DRIVING": 0.0, "ON_DUTY": 0.0, "OFF_DUTY": 0.0, "SLEEPER_BERTH": 0.0}
+            totals = {
+                "DRIVING": 0.0,
+                "ON_DUTY": 0.0,
+                "OFF_DUTY": 0.0,
+                "SLEEPER_BERTH": 0.0,
+            }
             driving_miles_accum = 0.0
             for act in entry["activities"]:
                 typ = act["type"]
@@ -70,23 +75,31 @@ class TripCreateView(APIView):
 
                 # detect rest stops (SLEEPER_BERTH and OFF_DUTY of significant length)
                 if typ == "SLEEPER_BERTH" and dur > 0:
-                    mile_marker = round(cumulative_miles_before + driving_miles_accum, 2)
-                    rest_stops.append({
-                        "day": entry["day"],
-                        "type": "SLEEPER_BERTH",
-                        "start": act.get("start"),
-                        "duration": dur,
-                        "mile_marker": mile_marker
-                    })
+                    mile_marker = round(
+                        cumulative_miles_before + driving_miles_accum, 2
+                    )
+                    rest_stops.append(
+                        {
+                            "day": entry["day"],
+                            "type": "SLEEPER_BERTH",
+                            "start": act.get("start"),
+                            "duration": dur,
+                            "mile_marker": mile_marker,
+                        }
+                    )
                 if typ == "OFF_DUTY" and dur >= 0.5:
-                    mile_marker = round(cumulative_miles_before + driving_miles_accum, 2)
-                    rest_stops.append({
-                        "day": entry["day"],
-                        "type": "OFF_DUTY",
-                        "start": act.get("start"),
-                        "duration": dur,
-                        "mile_marker": mile_marker
-                    })
+                    mile_marker = round(
+                        cumulative_miles_before + driving_miles_accum, 2
+                    )
+                    rest_stops.append(
+                        {
+                            "day": entry["day"],
+                            "type": "OFF_DUTY",
+                            "start": act.get("start"),
+                            "duration": dur,
+                            "mile_marker": mile_marker,
+                        }
+                    )
 
             cumulative_miles_before += entry.get("miles_driven", 0.0)
 
@@ -102,20 +115,23 @@ class TripCreateView(APIView):
                 "off_duty_hours": entry.get("off_duty_hours", 0.0),
                 "sleeper_hours": entry.get("sleeper_hours", 0.0),
                 "totals": totals,
-                "activities": entry["activities"]
+                "activities": entry["activities"],
             }
             enriched_logs.append(enriched)
 
-        return Response({
-            "message": "Trip created successfully",
-            "trip": TripSerializer(trip).data,
-            "route_info": {
-                "total_distance_miles": distance,
-                "total_duration_hours": duration,
-                "fuel_stops": fuel_stops,
-                "path": path,
-                "waypoints": waypoints,
-                "rest_stops": rest_stops
+        return Response(
+            {
+                "message": "Trip created successfully",
+                "trip": TripSerializer(trip).data,
+                "route_info": {
+                    "total_distance_miles": distance,
+                    "total_duration_hours": duration,
+                    "fuel_stops": fuel_stops,
+                    "path": path,
+                    "waypoints": waypoints,
+                    "rest_stops": rest_stops,
+                },
+                "hos_logs": enriched_logs,
             },
-            "hos_logs": enriched_logs
-        }, status=status.HTTP_201_CREATED)
+            status=status.HTTP_201_CREATED,
+        )

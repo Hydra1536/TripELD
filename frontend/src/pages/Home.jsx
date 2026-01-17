@@ -57,7 +57,9 @@ const Home = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-background text-foreground ${darkMode ? 'dark' : ''}`}>
+    <div
+      className={`min-h-screen bg-background text-foreground ${darkMode ? "dark" : ""}`}
+    >
       {/* Particle Background */}
       <div className="particle-bg">
         {particles.map((p) => (
@@ -79,13 +81,9 @@ const Home = () => {
         {/* Floating Header */}
         <header className="fixed top-0 left-0 right-0 glass-nav z-50 p-4 border-b animate-slide-down">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <h1 className="text-2xl md:text-3xl font-bold gradient-text">ELD Trip Planner</h1>
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-full bg-secondary/20 hover:bg-secondary/30 transition-colors"
-            >
-              {darkMode ? '☀️' : '🌙'}
-            </button>
+            <h1 className="text-2xl md:text-3xl font-bold gradient-text">
+              ELD Trip Planner
+            </h1>
           </div>
         </header>
 
@@ -93,7 +91,9 @@ const Home = () => {
         <div className="pt-20">
           {/* Form Card */}
           <div className="glass-card rounded-xl p-6 mb-8 hover:shadow-2xl transition-shadow duration-300 slide-up">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">Plan Your Trip</h2>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">
+              Plan Your Trip
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <input
                 name="current_location"
@@ -151,11 +151,10 @@ const Home = () => {
                   Generating...
                 </div>
               ) : (
-                'Generate Logs'
+                "Generate Logs"
               )}
             </button>
           </div>
-
 
           {/* Map and Logs */}
           {isLoading ? (
@@ -167,7 +166,10 @@ const Home = () => {
               </div>
               {/* Skeletons for Logs */}
               {[...Array(3)].map((_, idx) => (
-                <div key={idx} className="glass-card rounded-xl p-6 mb-6 animate-pulse">
+                <div
+                  key={idx}
+                  className="glass-card rounded-xl p-6 mb-6 animate-pulse"
+                >
                   <div className="flex justify-between mb-4">
                     <div className="h-6 bg-muted rounded w-1/3"></div>
                     <div className="h-16 bg-muted rounded w-1/4"></div>
@@ -186,13 +188,23 @@ const Home = () => {
             <>
               {routePath.length > 0 && (
                 <div className="slide-up">
-                  <MapView path={routePath} waypoints={waypoints} fuelStops={fuelStops} restStops={restStops} routeDistance={routeDistance} />
+                  <MapView
+                    path={routePath}
+                    waypoints={waypoints}
+                    fuelStops={fuelStops}
+                    restStops={restStops}
+                    routeDistance={routeDistance}
+                  />
                 </div>
               )}
 
               <div className="space-y-6">
                 {logs.map((day, idx) => (
-                  <div key={idx} className="slide-up" style={{ animationDelay: `${idx * 0.1}s` }}>
+                  <div
+                    key={idx}
+                    className="slide-up"
+                    style={{ animationDelay: `${idx * 0.1}s` }}
+                  >
                     <EldLog dayLog={day} />
                   </div>
                 ))}

@@ -1,10 +1,10 @@
 import React from "react";
 
 const ROWS = [
-  { key: "OFF_DUTY",  y: 40 },
-  { key: "SLEEPER_BERTH",  y: 80 },
-  { key: "DRIVING",  y: 120 },
-  { key: "ON_DUTY",  y: 160 },
+  { key: "OFF_DUTY", y: 40 },
+  { key: "SLEEPER_BERTH", y: 80 },
+  { key: "DRIVING", y: 120 },
+  { key: "ON_DUTY", y: 160 },
 ];
 
 const COLORS = {
@@ -30,27 +30,47 @@ const EldLog = ({ dayLog }) => {
 
   // compute totals from activities for this day
   const totals = { DRIVING: 0, ON_DUTY: 0, OFF_DUTY: 0, SLEEPER_BERTH: 0 };
-  dayLog.activities.forEach(a => {
+  dayLog.activities.forEach((a) => {
     if (a && a.type && typeof a.duration === "number") {
       totals[a.type] = (totals[a.type] || 0) + a.duration;
     }
   });
 
   // debug: ensure day totals = 24 (rounded)
-  const sumHours = totals.DRIVING + totals.ON_DUTY + totals.OFF_DUTY + totals.SLEEPER_BERTH;
+  const sumHours =
+    totals.DRIVING + totals.ON_DUTY + totals.OFF_DUTY + totals.SLEEPER_BERTH;
   const sumRounded = Math.round(sumHours * 100) / 100;
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100">
       <div className="flex flex-col md:flex-row justify-between items-start mb-4">
         <div className="mb-2 md:mb-0">
-          <h3 className="text-lg font-bold text-foreground">Day {dayLog.day} — {dayLog.date}</h3>
-          <div className="text-sm text-muted-foreground mt-1">From: <strong className="text-foreground">{dayLog.from}</strong> &nbsp; To: <strong className="text-foreground">{dayLog.to}</strong></div>
+          <h3 className="text-lg font-bold text-foreground">
+            Day {dayLog.day} — {dayLog.date}
+          </h3>
+          <div className="text-sm text-muted-foreground mt-1">
+            From: <strong className="text-foreground">{dayLog.from}</strong>{" "}
+            &nbsp; To: <strong className="text-foreground">{dayLog.to}</strong>
+          </div>
         </div>
         <div className="text-right text-sm glass-card rounded-lg p-3 w-full md:w-auto">
-          <div className="mb-1">Total miles today: <strong className="text-secondary">{dayLog.total_miles_driving_today}</strong></div>
-          <div className="mb-1">Total hours: <strong className="text-secondary">{dayLog.total_hours}</strong></div>
-          <div style={{ color: sumRounded !== 24 ? "#ef4444" : "#10b981", fontSize: 12, fontWeight: "bold" }}>
+          <div className="mb-1">
+            Total miles today:{" "}
+            <strong className="text-secondary">
+              {dayLog.total_miles_driving_today}
+            </strong>
+          </div>
+          <div className="mb-1">
+            Total hours:{" "}
+            <strong className="text-secondary">{dayLog.total_hours}</strong>
+          </div>
+          <div
+            style={{
+              color: sumRounded !== 24 ? "#ef4444" : "#10b981",
+              fontSize: 12,
+              fontWeight: "bold",
+            }}
+          >
             Day sum: {sumRounded} h {sumRounded !== 24 ? "(should be 24)" : "✓"}
           </div>
         </div>
@@ -70,7 +90,15 @@ const EldLog = ({ dayLog }) => {
               const x = xFromHour(hour);
               const isQuarter = i % 4 === 0;
               return (
-                <line key={`tick-${i}`} x1={x} y1={28} x2={x} y2={SVG_HEIGHT - 48} stroke={isQuarter ? "#6b7280" : "#9ca3af"} strokeWidth={isQuarter ? 1.2 : 0.5} />
+                <line
+                  key={`tick-${i}`}
+                  x1={x}
+                  y1={28}
+                  x2={x}
+                  y2={SVG_HEIGHT - 48}
+                  stroke={isQuarter ? "#6b7280" : "#9ca3af"}
+                  strokeWidth={isQuarter ? 1.2 : 0.5}
+                />
               );
             })}
           </g>
@@ -79,15 +107,36 @@ const EldLog = ({ dayLog }) => {
           <g>
             {[...Array(25)].map((_, i) => {
               const x = xFromHour(i);
-              return (<line key={`major-${i}`} x1={x} y1={24} x2={x} y2={SVG_HEIGHT - 44} stroke="#4b5563" strokeWidth={1.5} />);
+              return (
+                <line
+                  key={`major-${i}`}
+                  x1={x}
+                  y1={24}
+                  x2={x}
+                  y2={SVG_HEIGHT - 44}
+                  stroke="#4b5563"
+                  strokeWidth={1.5}
+                />
+              );
             })}
           </g>
 
           {/* Row boxes */}
           {ROWS.map((r) => (
             <g key={r.key}>
-              <rect x={0} y={r.y - 18} width={SVG_WIDTH} height={36} fill="#ffffff" stroke="#e5e7eb" strokeWidth={0.6} rx={4} />
-              <text x={8} y={r.y} fontSize="12" fill="#374151" fontWeight="500">{r.label}</text>
+              <rect
+                x={0}
+                y={r.y - 18}
+                width={SVG_WIDTH}
+                height={36}
+                fill="#ffffff"
+                stroke="#e5e7eb"
+                strokeWidth={0.6}
+                rx={4}
+              />
+              <text x={8} y={r.y} fontSize="12" fill="#374151" fontWeight="500">
+                {r.label}
+              </text>
             </g>
           ))}
 
@@ -98,8 +147,24 @@ const EldLog = ({ dayLog }) => {
               const label = String(i);
               return (
                 <g key={`label-${i}`}>
-                  <rect x={x - 2} y={2} width={50} height={14} fill="#f3f4f6" opacity={0.95} rx={2} />
-                  <text x={x - 1} y={13} fontSize="10" fill="#111827" fontWeight="500">{label}</text>
+                  <rect
+                    x={x - 2}
+                    y={2}
+                    width={50}
+                    height={14}
+                    fill="#f3f4f6"
+                    opacity={0.95}
+                    rx={2}
+                  />
+                  <text
+                    x={x - 1}
+                    y={13}
+                    fontSize="10"
+                    fill="#111827"
+                    fontWeight="500"
+                  >
+                    {label}
+                  </text>
                 </g>
               );
             })}
@@ -108,16 +173,23 @@ const EldLog = ({ dayLog }) => {
           {/* Activities rectangles with animation */}
           <g>
             {dayLog.activities.map((act, idx) => {
-              const start = (typeof act.start === "number") ? act.start : 0;
-              const end = (typeof act.end === "number") ? act.end : start + (act.duration || 0);
+              const start = typeof act.start === "number" ? act.start : 0;
+              const end =
+                typeof act.end === "number"
+                  ? act.end
+                  : start + (act.duration || 0);
               const width = Math.max(0.5, widthFromDuration(end - start)); // minimal width so 0-duration still visible as marker
-              const row = ROWS.find(r => r.key === act.type) || ROWS[0];
+              const row = ROWS.find((r) => r.key === act.type) || ROWS[0];
               const rectY = row.y - 10;
               const rectH = 20;
               const color = COLORS[act.type] || "#888";
 
               return (
-                <g key={`act-${idx}`} className="animate-fade-in" style={{ animationDelay: `${idx * 0.05}s` }}>
+                <g
+                  key={`act-${idx}`}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${idx * 0.05}s` }}
+                >
                   <rect
                     x={xFromHour(start)}
                     y={rectY}
@@ -131,47 +203,119 @@ const EldLog = ({ dayLog }) => {
                     className="hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer"
                   />
                   {width > 36 && (
-                    <text x={xFromHour(start) + 6} y={rectY + 14} fontSize="10" fill="#ffffff" fontWeight="bold">
-                      {act.type === "ON_DUTY" && act.reason ? act.reason : act.type}
+                    <text
+                      x={xFromHour(start) + 6}
+                      y={rectY + 14}
+                      fontSize="10"
+                      fill="#ffffff"
+                      fontWeight="bold"
+                    >
+                      {act.type === "ON_DUTY" && act.reason
+                        ? act.reason
+                        : act.type}
                     </text>
                   )}
                   {/* fuel stop indicator */}
                   {act.type === "ON_DUTY" && act.reason === "Fuel stop" && (
-                    <circle cx={xFromHour((act.start + act.end) / 2)} cy={rectY - 6} r={4} fill="#f97316" stroke="#374151" className="animate-bounce" />
+                    <circle
+                      cx={xFromHour((act.start + act.end) / 2)}
+                      cy={rectY - 6}
+                      r={4}
+                      fill="#f97316"
+                      stroke="#374151"
+                      className="animate-bounce"
+                    />
                   )}
                   {/* Tooltip on hover */}
-                  <title>{`${act.type}: ${act.duration} hrs ${act.reason ? `(${act.reason})` : ''}`}</title>
+                  <title>{`${act.type}: ${act.duration} hrs ${act.reason ? `(${act.reason})` : ""}`}</title>
                 </g>
               );
             })}
           </g>
-
-
         </svg>
       </div>
 
       <div className="flex flex-wrap gap-4 text-sm mt-4 p-3 glass-card rounded-lg">
+        <div>
+          <br></br>
+        </div>
 
-                  <div><br></br></div>
-
         <div className="flex items-center gap-2">
-          <span style={{ background: COLORS.OFF_DUTY, display: "inline-block", width: 14, height: 14, borderRadius: 2 }}></span>
-          <span className="font-medium"> Off Duty: <strong className="text-muted-foreground">{totals.OFF_DUTY.toFixed(2)} h</strong></span>
+          <span
+            style={{
+              background: COLORS.OFF_DUTY,
+              display: "inline-block",
+              width: 14,
+              height: 14,
+              borderRadius: 2,
+            }}
+          ></span>
+          <span className="font-medium">
+            {" "}
+            Off Duty:{" "}
+            <strong className="text-muted-foreground">
+              {totals.OFF_DUTY.toFixed(2)} h
+            </strong>
+          </span>
         </div>
         <div className="flex items-center gap-2">
-          <span style={{ background: COLORS.SLEEPER_BERTH, display: "inline-block", width: 14, height: 14, borderRadius: 2 }}></span>
-          <span className="font-medium"> Sleeper Berth: <strong className="text-green-500">{totals.SLEEPER_BERTH.toFixed(2)} h</strong></span>
-        </div>
-                <div className="flex items-center gap-2">
-          <span style={{ background: COLORS.DRIVING, display: "inline-block", width: 14, height: 14, borderRadius: 2 }}></span>
-          <span className="font-medium"> Driving: <strong className="text-primary">{totals.DRIVING.toFixed(2)} h</strong></span>
+          <span
+            style={{
+              background: COLORS.SLEEPER_BERTH,
+              display: "inline-block",
+              width: 14,
+              height: 14,
+              borderRadius: 2,
+            }}
+          ></span>
+          <span className="font-medium">
+            {" "}
+            Sleeper Berth:{" "}
+            <strong className="text-green-500">
+              {totals.SLEEPER_BERTH.toFixed(2)} h
+            </strong>
+          </span>
         </div>
         <div className="flex items-center gap-2">
-          <span style={{ background: COLORS.ON_DUTY, display: "inline-block", width: 14, height: 14, borderRadius: 2 }}></span>
-          <span className="font-medium"> On Duty: <strong className="text-accent">{totals.ON_DUTY.toFixed(2)} h</strong></span>
+          <span
+            style={{
+              background: COLORS.DRIVING,
+              display: "inline-block",
+              width: 14,
+              height: 14,
+              borderRadius: 2,
+            }}
+          ></span>
+          <span className="font-medium">
+            {" "}
+            Driving:{" "}
+            <strong className="text-primary">
+              {totals.DRIVING.toFixed(2)} h
+            </strong>
+          </span>
         </div>
-              </div>
-                  <div><br></br></div>
+        <div className="flex items-center gap-2">
+          <span
+            style={{
+              background: COLORS.ON_DUTY,
+              display: "inline-block",
+              width: 14,
+              height: 14,
+              borderRadius: 2,
+            }}
+          ></span>
+          <span className="font-medium">
+            {" "}
+            On Duty:{" "}
+            <strong className="text-accent">
+              {totals.ON_DUTY.toFixed(2)} h
+            </strong>
+          </span>
+        </div>
+      </div>
+      <div>
+        <br></br>
+      </div>
     </div>
   );
 };
