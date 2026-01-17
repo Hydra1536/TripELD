@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-m199i8izig9b1!8ri^&%i(q3!y_3$2fc8v%a-*)0iwen*+1_ns
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://tripeld.onrender.com/"
+ALLOWED_HOSTS = ["https://tripeld.onrender.com/",
                   ".onrender.com",   # allows Render subdomains
     "localhost",
     "127.0.0.1",
@@ -86,7 +86,6 @@ WSGI_APPLICATION = "core.wsgi.application"
 # Allow Vercel frontend domain
 CORS_ALLOWED_ORIGINS = [
     "https://trip-eld-f2vc.vercel.app/",
-    "http://localhost:5173",  # for local testing
 ]
 
 # Database
