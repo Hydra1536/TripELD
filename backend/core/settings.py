@@ -25,7 +25,11 @@ SECRET_KEY = "django-insecure-m199i8izig9b1!8ri^&%i(q3!y_3$2fc8v%a-*)0iwen*+1_ns
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://tripeld.onrender.com/"]
+ALLOWED_HOSTS = ["https://tripeld.onrender.com/"
+                  ".onrender.com",   # allows Render subdomains
+    "localhost",
+    "127.0.0.1",
+                 ]
 
 
 # Application definition
@@ -56,6 +60,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "core.urls"
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = [
+    "https://tripeld.onrender.com",
+    "https://trip-eld-f2vc.vercel.app",
+]
 
 TEMPLATES = [
     {

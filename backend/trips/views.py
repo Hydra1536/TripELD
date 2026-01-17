@@ -6,8 +6,10 @@ from datetime import timedelta
 from .serializers import TripSerializer
 from .services.routing import calculate_route, calculate_fuel_stops
 from .services.hos_calculator import calculate_hos
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
-
+@method_decorator(csrf_exempt, name="dispatch")
 class TripCreateView(APIView):
     def post(self, request):
         serializer = TripSerializer(data=request.data)
