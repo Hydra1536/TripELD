@@ -42,12 +42,12 @@ const Home = () => {
     try {
       const res = await createTrip(form);
 
-      setLogs(res.data.hos_logs || []);
-      setRoutePath(res.data.route_info?.path || []);
-      setWaypoints(res.data.route_info?.waypoints || []);
-      setFuelStops(res.data.route_info?.fuel_stops || []);
-      setRestStops(res.data.route_info?.rest_stops || []);
-      setRouteDistance(res.data.route_info?.total_distance_miles || 0);
+      setLogs(res.hos_logs || []);
+      setRoutePath(res.route_info?.path || []);
+      setWaypoints(res.route_info?.waypoints || []);
+      setFuelStops(res.route_info?.fuel_stops || []);
+      setRestStops(res.route_info?.rest_stops || []);
+      setRouteDistance(res.route_info?.total_distance_miles || 0);
     } catch (err) {
       console.error("Trip creation failed:", err);
       alert("Failed to generate trip. Check backend.");
