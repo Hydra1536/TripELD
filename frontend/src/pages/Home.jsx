@@ -18,6 +18,17 @@ const Home = () => {
   const [fuelStops, setFuelStops] = useState([]);
   const [restStops, setRestStops] = useState([]);
   const [routeDistance, setRouteDistance] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Generate particles
+  const particles = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    size: Math.random() * 6 + 2,
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    delay: Math.random() * 5,
+  }));
 
   const handleChange = (e) => {
     setForm({
@@ -27,6 +38,7 @@ const Home = () => {
   };
 
   const submitTrip = async () => {
+    setIsLoading(true);
     try {
       const res = await createTrip(form);
 
@@ -39,16 +51,41 @@ const Home = () => {
     } catch (err) {
       console.error("Trip creation failed:", err);
       alert("Failed to generate trip. Check backend.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground desiplay: center">
+    <div className={`min-h-screen bg-background text-foreground ${darkMode ? 'dark' : ''}`}>
+      {/* Particle Background */}
+      <div className="particle-bg">
+        {particles.map((p) => (
+          <div
+            key={p.id}
+            className="particle"
+            style={{
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              left: `${p.left}%`,
+              top: `${p.top}%`,
+              animationDelay: `${p.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+
       <div className="max-w-4xl mx-auto p-4 fade-in">
         {/* Floating Header */}
         <header className="fixed top-0 left-0 right-0 glass-nav z-50 p-4 border-b animate-slide-down">
-          <div className="max-w-6xl mx-auto flex items-center justify-center">
-            <h1 className="text-2xl md:text-3xl font-bold text-center gradient-text">ELD Trip Planner</h1>
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <h1 className="text-2xl md:text-3xl font-bold gradient-text">ELD Trip Planner</h1>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-full bg-secondary/20 hover:bg-secondary/30 transition-colors"
+            >
+              {darkMode ? '☀️' : '🌙'}
+            </button>
           </div>
         </header>
 
@@ -105,27 +142,63 @@ const Home = () => {
             </datalist>
             <button
               onClick={submitTrip}
-              className="w-full md:w-auto bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transform hover:scale-105 transition-all duration-200 shadow-lg glow-primary"
+              disabled={isLoading}
+              className="w-full md:w-auto bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transform hover:scale-105 transition-all duration-200 shadow-lg glow-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Generate Logs
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Generating...
+                </div>
+              ) : (
+                'Generate Logs'
+              )}
             </button>
           </div>
 
 
           {/* Map and Logs */}
-          {routePath.length > 0 && (
-            <div className="slide-up">
-              <MapView path={routePath} waypoints={waypoints} fuelStops={fuelStops} restStops={restStops} routeDistance={routeDistance} />
-            </div>
-          )}
-
-          <div className="space-y-6">
-            {logs.map((day, idx) => (
-              <div key={idx} className="slide-up" style={{ animationDelay: `${idx * 0.1}s` }}>
-                <EldLog dayLog={day} />
+          {isLoading ? (
+            <div className="space-y-6">
+              {/* Skeleton for Map */}
+              <div className="glass-card rounded-xl p-4 mb-6 animate-pulse">
+                <div className="h-4 bg-muted rounded mb-4 w-1/4"></div>
+                <div className="h-64 bg-muted rounded"></div>
               </div>
-            ))}
-          </div>
+              {/* Skeletons for Logs */}
+              {[...Array(3)].map((_, idx) => (
+                <div key={idx} className="glass-card rounded-xl p-6 mb-6 animate-pulse">
+                  <div className="flex justify-between mb-4">
+                    <div className="h-6 bg-muted rounded w-1/3"></div>
+                    <div className="h-16 bg-muted rounded w-1/4"></div>
+                  </div>
+                  <div className="h-32 bg-muted rounded mb-4"></div>
+                  <div className="flex gap-4">
+                    <div className="h-4 bg-muted rounded w-20"></div>
+                    <div className="h-4 bg-muted rounded w-24"></div>
+                    <div className="h-4 bg-muted rounded w-16"></div>
+                    <div className="h-4 bg-muted rounded w-18"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              {routePath.length > 0 && (
+                <div className="slide-up">
+                  <MapView path={routePath} waypoints={waypoints} fuelStops={fuelStops} restStops={restStops} routeDistance={routeDistance} />
+                </div>
+              )}
+
+              <div className="space-y-6">
+                {logs.map((day, idx) => (
+                  <div key={idx} className="slide-up" style={{ animationDelay: `${idx * 0.1}s` }}>
+                    <EldLog dayLog={day} />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Credit */}

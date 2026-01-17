@@ -57,12 +57,7 @@ const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], ro
     return out;
   };
 
-  const uniqueWaypoints = uniq(waypoints && waypoints.length ? waypoints : [path[0], path[Math.floor(path.length / 2)], path[path.length - 1]]);
-  const markers = [
-    uniqueWaypoints[0] || path[0],
-    uniqueWaypoints[1] || path[Math.floor(path.length / 2)],
-    uniqueWaypoints[2] || path[path.length - 1]
-  ];
+  const markers = [path[0], path[path.length - 1]];
 
   // compute cumulative miles along path
   const cumulative = [0];
@@ -102,11 +97,13 @@ const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], ro
 
   return (
     <div className="glass-card rounded-xl p-4 mb-6 hover:shadow-xl transition-shadow duration-300">
-      <div className="flex items-center justify-between mb-4">
+                        <div><br></br></div>
+<div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-gray-800">Route Map</h3>
         <div className="text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
           Total Distance: <strong className="text-blue-600">{routeDistance.toFixed(1)} miles</strong>
-        </div>
+                          <div><br></br></div>
+</div>
       </div>
       <div
         style={{ height: window.innerWidth < 768 ? 250 : 300, width: "80%" }}
@@ -118,27 +115,19 @@ const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], ro
 
           <Polyline positions={path} pathOptions={{ color: "#2563EB", weight: 6, opacity: 0.95 }} />
 
-          {/* Markers: Current, Pickup, Dropoff with distinct colors */}
+          {/* Markers: Start and Drop Off */}
           <Marker position={markers[0]} icon={createIcon("#0ea5e9")}>
             <Popup className="custom-popup">
               <div className="p-2">
-                <strong className="text-blue-600">Current (Start)</strong>
+                <strong className="text-blue-600">Start</strong>
               </div>
             </Popup>
           </Marker>
 
-          <Marker position={markers[1]} icon={createIcon("#eab308")}>
+          <Marker position={markers[1]} icon={createIcon("#ef4444")}>
             <Popup className="custom-popup">
               <div className="p-2">
-                <strong className="text-yellow-600">Pickup</strong>
-              </div>
-            </Popup>
-          </Marker>
-
-          <Marker position={markers[2]} icon={createIcon("#ef4444")}>
-            <Popup className="custom-popup">
-              <div className="p-2">
-                <strong className="text-red-600">Dropoff</strong>
+                <strong className="text-red-600">Drop Off</strong>
               </div>
             </Popup>
           </Marker>
@@ -174,7 +163,8 @@ const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], ro
             </Marker>
           ))}
         </MapContainer>
-      </div>
+      </div>                  <div><br></br></div>
+
     </div>
   );
 };

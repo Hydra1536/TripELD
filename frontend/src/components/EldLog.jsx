@@ -117,7 +117,7 @@ const EldLog = ({ dayLog }) => {
               const color = COLORS[act.type] || "#888";
 
               return (
-                <g key={`act-${idx}`} className="animate-pulse" style={{ animationDuration: '2s', animationDelay: `${idx * 0.1}s` }}>
+                <g key={`act-${idx}`} className="animate-fade-in" style={{ animationDelay: `${idx * 0.05}s` }}>
                   <rect
                     x={xFromHour(start)}
                     y={rectY}
@@ -128,7 +128,7 @@ const EldLog = ({ dayLog }) => {
                     stroke="#374151"
                     strokeWidth={0.25}
                     rx={3}
-                    className="hover:opacity-100 transition-opacity duration-200"
+                    className="hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer"
                   />
                   {width > 36 && (
                     <text x={xFromHour(start) + 6} y={rectY + 14} fontSize="10" fill="#ffffff" fontWeight="bold">
@@ -139,6 +139,8 @@ const EldLog = ({ dayLog }) => {
                   {act.type === "ON_DUTY" && act.reason === "Fuel stop" && (
                     <circle cx={xFromHour((act.start + act.end) / 2)} cy={rectY - 6} r={4} fill="#f97316" stroke="#374151" className="animate-bounce" />
                   )}
+                  {/* Tooltip on hover */}
+                  <title>{`${act.type}: ${act.duration} hrs ${act.reason ? `(${act.reason})` : ''}`}</title>
                 </g>
               );
             })}
@@ -150,6 +152,7 @@ const EldLog = ({ dayLog }) => {
 
       <div className="flex flex-wrap gap-4 text-sm mt-4 p-3 glass-card rounded-lg">
 
+                  <div><br></br></div>
 
         <div className="flex items-center gap-2">
           <span style={{ background: COLORS.OFF_DUTY, display: "inline-block", width: 14, height: 14, borderRadius: 2 }}></span>
@@ -168,6 +171,7 @@ const EldLog = ({ dayLog }) => {
           <span className="font-medium"> On Duty: <strong className="text-accent">{totals.ON_DUTY.toFixed(2)} h</strong></span>
         </div>
               </div>
+                  <div><br></br></div>
     </div>
   );
 };
