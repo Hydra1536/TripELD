@@ -1,5 +1,13 @@
-import React, { useEffect } from "react";
-import { MapContainer, TileLayer, Polyline, CircleMarker, Popup, useMap } from "react-leaflet";
+import React, { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Polyline, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+
+const createIcon = (color) => L.divIcon({
+  html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #000;"></div>`,
+  className: 'custom-marker-icon',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10]
+});
 
 function haversineMiles([lat1, lon1], [lat2, lon2]) {
   const toRad = (x) => (x * Math.PI) / 180;
@@ -24,6 +32,14 @@ const FitBounds = ({ positions }) => {
 };
 
 const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], routeDistance = 0 }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (path && path.length > 0) {
+      setIsLoaded(true);
+    }
+  }, [path]);
+
   if (!path || path.length === 0) return null;
 
   // dedupe waypoints to avoid duplicates
@@ -85,45 +101,80 @@ const MapView = ({ path = [], waypoints = [], fuelStops = [], restStops = [], ro
   const center = path[0];
 
   return (
-    <div style={{ height: 420, width: "100%" }} className="rounded shadow-md mb-6">
-      <MapContainer center={center} zoom={6} style={{ height: "100%", width: "100%" }}>
-        <FitBounds positions={path} />
-        <TileLayer attribution='© OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    <div className="glass-card rounded-xl p-4 mb-6 hover:shadow-xl transition-shadow duration-300">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-gray-800">Route Map</h3>
+        <div className="text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full">
+          Total Distance: <strong className="text-blue-600">{routeDistance.toFixed(1)} miles</strong>
+        </div>
+      </div>
+      <div
+        style={{ height: window.innerWidth < 768 ? 250 : 300, width: "80%" }}
+        className={`rounded-lg overflow-hidden shadow-inner transition-all duration-500 fade-in ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+      >
+        <MapContainer center={center} zoom={6} style={{ height: "100%", width: "100%" }}>
+          <FitBounds positions={path} />
+          <TileLayer attribution='© OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        <Polyline positions={path} pathOptions={{ color: "#2563EB", weight: 6, opacity: 0.95 }} />
+          <Polyline positions={path} pathOptions={{ color: "#2563EB", weight: 6, opacity: 0.95 }} />
 
-        {/* Markers: Current, Pickup, Dropoff with distinct colors */}
-        <CircleMarker center={markers[0]} radius={7} pathOptions={{ color: "#111827", fillColor: "#0ea5e9", fillOpacity: 1 }}>
-          <Popup>Current (Start)</Popup>
-        </CircleMarker>
+          {/* Markers: Current, Pickup, Dropoff with distinct colors */}
+          <Marker position={markers[0]} icon={createIcon("#0ea5e9")}>
+            <Popup className="custom-popup">
+              <div className="p-2">
+                <strong className="text-blue-600">Current (Start)</strong>
+              </div>
+            </Popup>
+          </Marker>
 
-        <CircleMarker center={markers[1]} radius={7} pathOptions={{ color: "#ebf800", fillColor: "#c1cb31", fillOpacity: 1 }}>
-          <Popup>Pickup</Popup>
-        </CircleMarker>
+          <Marker position={markers[1]} icon={createIcon("#eab308")}>
+            <Popup className="custom-popup">
+              <div className="p-2">
+                <strong className="text-yellow-600">Pickup</strong>
+              </div>
+            </Popup>
+          </Marker>
 
-        <CircleMarker center={markers[2]} radius={7} pathOptions={{ color: "#7c2d12", fillColor: "#ff0808", fillOpacity: 1 }}>
-          <Popup>Dropoff</Popup>
-        </CircleMarker>
+          <Marker position={markers[2]} icon={createIcon("#ef4444")}>
+            <Popup className="custom-popup">
+              <div className="p-2">
+                <strong className="text-red-600">Dropoff</strong>
+              </div>
+            </Popup>
+          </Marker>
 
-        {/* Fuel stops: orange */}
-        {fuelMarkers.map((f, i) => (
-          <CircleMarker key={`fuel-${i}`} center={f.coord} radius={6} pathOptions={{ color: "#92400e", fillColor: "#f97316", fillOpacity: 1 }}>
-            <Popup>{`Fuel stop at mile ${f.mile_marker}`}</Popup>
-          </CircleMarker>
-        ))}
+          {/* Fuel stops: orange */}
+          {fuelMarkers.map((f, i) => (
+            <Marker key={`fuel-${i}`} position={f.coord} icon={createIcon("#f97316")}>
+              <Popup className="custom-popup">
+                <div className="p-2">
+                  <strong className="text-orange-600">Fuel Stop</strong><br />
+                  Mile: {f.mile_marker}
+                </div>
+              </Popup>
+            </Marker>
+          ))}
 
-        {/* Rest stops: green for sleeper, gray for off-duty */}
-        {restMarkers.map((r, i) => (
-          <CircleMarker
-            key={`rest-${i}`}
-            center={r.coord}
-            radius={6}
-            pathOptions={{ color: r.type === "SLEEPER_BERTH" ? "#065f46" : "#4b5563", fillColor: r.type === "SLEEPER_BERTH" ? "#10B981" : "#9CA3AF", fillOpacity: 1 }}
-          >
-            <Popup>{`${r.type} (day ${r.day}) — ${r.duration} hr — mile ${r.mile_marker}`}</Popup>
-          </CircleMarker>
-        ))}
-      </MapContainer>
+          {/* Rest stops: green for sleeper, gray for off-duty */}
+          {restMarkers.map((r, i) => (
+            <Marker
+              key={`rest-${i}`}
+              position={r.coord}
+              icon={createIcon(r.type === "SLEEPER_BERTH" ? "#10B981" : "#9CA3AF")}
+            >
+              <Popup className="custom-popup">
+                <div className="p-2">
+                  <strong className={r.type === "SLEEPER_BERTH" ? "text-green-600" : "text-gray-600"}>
+                    {r.type === "SLEEPER_BERTH" ? "Sleeper Berth" : "Off Duty Rest"}
+                  </strong><br />
+                  Day: {r.day} | Duration: {r.duration} hr<br />
+                  Mile: {r.mile_marker}
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </div>
     </div>
   );
 };

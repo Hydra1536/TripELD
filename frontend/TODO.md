@@ -1,0 +1,5 @@
+- [x] Replace index.css with provided CSS for responsive background and theme
+- [x] Update Home.jsx: Add logo to header, change classes for new theme, make city inputs search bars with suggestions, add credit at bottom
+- [x] Update MapView.jsx: Replace CircleMarker with Marker and icons for points
+- [x] Update EldLog.jsx: Remove remarks box
+- [ ] Test the app: Run dev server and verify changes

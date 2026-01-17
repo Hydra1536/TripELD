@@ -1,11 +1,10 @@
-// D:\TripCop\frontend\src\components\EldLog.jsx
 import React from "react";
 
 const ROWS = [
-  { key: "OFF_DUTY", label: "Off Duty", y: 40 },
-  { key: "SLEEPER_BERTH", label: "Sleeper Berth", y: 80 },
-  { key: "DRIVING", label: "Driving", y: 120 },
-  { key: "ON_DUTY", label: "On Duty (Not Driving)", y: 160 },
+  { key: "OFF_DUTY",  y: 40 },
+  { key: "SLEEPER_BERTH",  y: 80 },
+  { key: "DRIVING",  y: 120 },
+  { key: "ON_DUTY",  y: 160 },
 ];
 
 const COLORS = {
@@ -15,8 +14,8 @@ const COLORS = {
   ON_DUTY: "#F59E0B",
 };
 
-const SVG_WIDTH = 960;
-const SVG_HEIGHT = 220;
+const SVG_WIDTH = 720;
+const SVG_HEIGHT = 180;
 const SCALE = SVG_WIDTH / 24; // px per hour
 
 function xFromHour(h) {
@@ -42,115 +41,133 @@ const EldLog = ({ dayLog }) => {
   const sumRounded = Math.round(sumHours * 100) / 100;
 
   return (
-    <div className="border rounded p-4 mb-6 bg-white shadow">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <h3 className="font-semibold">Day {dayLog.day} — {dayLog.date}</h3>
-          <div className="text-sm text-gray-600">From: <strong>{dayLog.from}</strong> &nbsp; To: <strong>{dayLog.to}</strong></div>
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+      <div className="flex flex-col md:flex-row justify-between items-start mb-4">
+        <div className="mb-2 md:mb-0">
+          <h3 className="text-lg font-bold text-foreground">Day {dayLog.day} — {dayLog.date}</h3>
+          <div className="text-sm text-muted-foreground mt-1">From: <strong className="text-foreground">{dayLog.from}</strong> &nbsp; To: <strong className="text-foreground">{dayLog.to}</strong></div>
         </div>
-        <div className="text-right text-sm">
-          <div>Total miles today: <strong>{dayLog.total_miles_driving_today}</strong></div>
-          <div>Total hours: <strong>{dayLog.total_hours}</strong></div>
-          <div style={{ color: sumRounded !== 24 ? "red" : "inherit", fontSize: 12 }}>
-            Day sum: {sumRounded} h {sumRounded !== 24 ? "(should be 24)" : ""}
+        <div className="text-right text-sm glass-card rounded-lg p-3 w-full md:w-auto">
+          <div className="mb-1">Total miles today: <strong className="text-secondary">{dayLog.total_miles_driving_today}</strong></div>
+          <div className="mb-1">Total hours: <strong className="text-secondary">{dayLog.total_hours}</strong></div>
+          <div style={{ color: sumRounded !== 24 ? "#ef4444" : "#10b981", fontSize: 12, fontWeight: "bold" }}>
+            Day sum: {sumRounded} h {sumRounded !== 24 ? "(should be 24)" : "✓"}
           </div>
         </div>
       </div>
 
-      <svg width="100%" viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} preserveAspectRatio="xMidYMid meet">
-        {/* 15-minute ticks (96) */}
-        <g>
-          {[...Array(96)].map((_, i) => {
-            const hour = i / 4;
-            const x = xFromHour(hour);
-            const isQuarter = i % 4 === 0;
-            return (
-              <line key={`tick-${i}`} x1={x} y1={28} x2={x} y2={SVG_HEIGHT - 48} stroke={isQuarter ? "#cbd5e1" : "#eef2f7"} strokeWidth={isQuarter ? 0.9 : 0.35} />
-            );
-          })}
-        </g>
-
-        {/* Hour major lines */}
-        <g>
-          {[...Array(25)].map((_, i) => {
-            const x = xFromHour(i);
-            return (<line key={`major-${i}`} x1={x} y1={24} x2={x} y2={SVG_HEIGHT - 44} stroke="#d1d5db" strokeWidth={1} />);
-          })}
-        </g>
-
-        {/* Row boxes */}
-        {ROWS.map((r) => (
-          <g key={r.key}>
-            <rect x={0} y={r.y - 18} width={SVG_WIDTH} height={36} fill="#ffffff" stroke="#ccc" strokeWidth={0.6} />
-            <text x={8} y={r.y} fontSize="12" fill="#111">{r.label}</text>
+      <div className="overflow-x-auto">
+        <svg
+          width="100%"
+          height="300"
+          viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
+          preserveAspectRatio="xMidYMid meet"
+        >
+          {/* 15-minute ticks (96) */}
+          <g>
+            {[...Array(96)].map((_, i) => {
+              const hour = i / 4;
+              const x = xFromHour(hour);
+              const isQuarter = i % 4 === 0;
+              return (
+                <line key={`tick-${i}`} x1={x} y1={28} x2={x} y2={SVG_HEIGHT - 48} stroke={isQuarter ? "#6b7280" : "#9ca3af"} strokeWidth={isQuarter ? 1.2 : 0.5} />
+              );
+            })}
           </g>
-        ))}
 
-        {/* Hour labels ON TOP so they are not covered */}
-        <g>
-          {[...Array(25)].map((_, i) => {
-            const x = xFromHour(i);
-            const label = i === 0 ? "Midnight" : (i === 12 ? "Noon" : String(i));
-            return (
-              <g key={`label-${i}`}>
-                <rect x={x - 2} y={2} width={50} height={14} fill="#f8d1d1" opacity={0.95} />
-                <text x={x -1} y={13} fontSize="10" fill="#111">{label}</text>
-              </g>
-            );
-          })}
-        </g>
+          {/* Hour major lines */}
+          <g>
+            {[...Array(25)].map((_, i) => {
+              const x = xFromHour(i);
+              return (<line key={`major-${i}`} x1={x} y1={24} x2={x} y2={SVG_HEIGHT - 44} stroke="#4b5563" strokeWidth={1.5} />);
+            })}
+          </g>
 
-        {/* Activities rectangles */}
-        <g>
-          {dayLog.activities.map((act, idx) => {
-            const start = (typeof act.start === "number") ? act.start : 0;
-            const end = (typeof act.end === "number") ? act.end : start + (act.duration || 0);
-            const width = Math.max(0.5, widthFromDuration(end - start)); // minimal width so 0-duration still visible as marker
-            const row = ROWS.find(r => r.key === act.type) || ROWS[0];
-            const rectY = row.y - 10;
-            const rectH = 20;
-            const color = COLORS[act.type] || "#888";
+          {/* Row boxes */}
+          {ROWS.map((r) => (
+            <g key={r.key}>
+              <rect x={0} y={r.y - 18} width={SVG_WIDTH} height={36} fill="#ffffff" stroke="#e5e7eb" strokeWidth={0.6} rx={4} />
+              <text x={8} y={r.y} fontSize="12" fill="#374151" fontWeight="500">{r.label}</text>
+            </g>
+          ))}
 
-            return (
-              <g key={`act-${idx}`}>
-                <rect
-                  x={xFromHour(start)}
-                  y={rectY}
-                  width={width}
-                  height={rectH}
-                  fill={color}
-                  opacity={0.95}
-                  stroke="#222"
-                  strokeWidth={0.25}
-                  rx={2}
-                />
-                {width > 36 && (
-                  <text x={xFromHour(start) + 6} y={rectY + 14} fontSize="10" fill="#fff">
-                    {act.type === "ON_DUTY" && act.reason ? act.reason : act.type}
-                  </text>
-                )}
-                {/* fuel stop indicator */}
-                {act.type === "ON_DUTY" && act.reason === "Fuel stop" && (
-                  <circle cx={xFromHour((act.start + act.end) / 2)} cy={rectY - 6} r={4} fill="#f97316" stroke="#333" />
-                )}
-              </g>
-            );
-          })}
-        </g>
+          {/* Hour labels ON TOP so they are not covered */}
+          <g>
+            {[...Array(25)].map((_, i) => {
+              const x = xFromHour(i);
+              const label = String(i);
+              return (
+                <g key={`label-${i}`}>
+                  <rect x={x - 2} y={2} width={50} height={14} fill="#f3f4f6" opacity={0.95} rx={2} />
+                  <text x={x - 1} y={13} fontSize="10" fill="#111827" fontWeight="500">{label}</text>
+                </g>
+              );
+            })}
+          </g>
 
-        {/* Remarks box */}
-        <g>
-          <rect x={0} y={SVG_HEIGHT - 36} width={SVG_WIDTH} height={36} fill="#fff" stroke="#111" strokeWidth={0.6} />
-          <text x={8} y={SVG_HEIGHT - 16} fontSize="12" fill="#111">REMARKS: </text>
-        </g>
-      </svg>
+          {/* Activities rectangles with animation */}
+          <g>
+            {dayLog.activities.map((act, idx) => {
+              const start = (typeof act.start === "number") ? act.start : 0;
+              const end = (typeof act.end === "number") ? act.end : start + (act.duration || 0);
+              const width = Math.max(0.5, widthFromDuration(end - start)); // minimal width so 0-duration still visible as marker
+              const row = ROWS.find(r => r.key === act.type) || ROWS[0];
+              const rectY = row.y - 10;
+              const rectH = 20;
+              const color = COLORS[act.type] || "#888";
 
-      <div className="flex gap-6 text-sm mt-2">
-        <div><span style={{ background: COLORS.DRIVING, display: "inline-block", width: 12, height: 12 }}></span> Driving: {totals.DRIVING.toFixed(2)} h</div>
-        <div><span style={{ background: COLORS.ON_DUTY, display: "inline-block", width: 12, height: 12 }}></span> On Duty: {totals.ON_DUTY.toFixed(2)} h</div>
-        <div><span style={{ background: COLORS.SLEEPER_BERTH, display: "inline-block", width: 12, height: 12 }}></span> Sleeper Berth: {totals.SLEEPER_BERTH.toFixed(2)} h</div>
-        <div><span style={{ background: COLORS.OFF_DUTY, display: "inline-block", width: 12, height: 12 }}></span> Off Duty: {totals.OFF_DUTY.toFixed(2)} h</div>
+              return (
+                <g key={`act-${idx}`} className="animate-pulse" style={{ animationDuration: '2s', animationDelay: `${idx * 0.1}s` }}>
+                  <rect
+                    x={xFromHour(start)}
+                    y={rectY}
+                    width={width}
+                    height={rectH}
+                    fill={color}
+                    opacity={0.95}
+                    stroke="#374151"
+                    strokeWidth={0.25}
+                    rx={3}
+                    className="hover:opacity-100 transition-opacity duration-200"
+                  />
+                  {width > 36 && (
+                    <text x={xFromHour(start) + 6} y={rectY + 14} fontSize="10" fill="#ffffff" fontWeight="bold">
+                      {act.type === "ON_DUTY" && act.reason ? act.reason : act.type}
+                    </text>
+                  )}
+                  {/* fuel stop indicator */}
+                  {act.type === "ON_DUTY" && act.reason === "Fuel stop" && (
+                    <circle cx={xFromHour((act.start + act.end) / 2)} cy={rectY - 6} r={4} fill="#f97316" stroke="#374151" className="animate-bounce" />
+                  )}
+                </g>
+              );
+            })}
+          </g>
+
+
+        </svg>
       </div>
+
+      <div className="flex flex-wrap gap-4 text-sm mt-4 p-3 glass-card rounded-lg">
+
+
+        <div className="flex items-center gap-2">
+          <span style={{ background: COLORS.OFF_DUTY, display: "inline-block", width: 14, height: 14, borderRadius: 2 }}></span>
+          <span className="font-medium"> Off Duty: <strong className="text-muted-foreground">{totals.OFF_DUTY.toFixed(2)} h</strong></span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span style={{ background: COLORS.SLEEPER_BERTH, display: "inline-block", width: 14, height: 14, borderRadius: 2 }}></span>
+          <span className="font-medium"> Sleeper Berth: <strong className="text-green-500">{totals.SLEEPER_BERTH.toFixed(2)} h</strong></span>
+        </div>
+                <div className="flex items-center gap-2">
+          <span style={{ background: COLORS.DRIVING, display: "inline-block", width: 14, height: 14, borderRadius: 2 }}></span>
+          <span className="font-medium"> Driving: <strong className="text-primary">{totals.DRIVING.toFixed(2)} h</strong></span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span style={{ background: COLORS.ON_DUTY, display: "inline-block", width: 14, height: 14, borderRadius: 2 }}></span>
+          <span className="font-medium"> On Duty: <strong className="text-accent">{totals.ON_DUTY.toFixed(2)} h</strong></span>
+        </div>
+              </div>
     </div>
   );
 };
