@@ -62,12 +62,17 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "core.urls"
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://trip-eld-f2vc.vercel.app",
+]
+
 CORS_ALLOW_CREDENTIALS = True
+
 CSRF_TRUSTED_ORIGINS = [
     "https://tripeld.onrender.com",
     "https://trip-eld-f2vc.vercel.app",
 ]
+
 
 TEMPLATES = [
     {
