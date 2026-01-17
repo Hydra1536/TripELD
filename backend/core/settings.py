@@ -74,6 +74,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
+# Allow Vercel frontend domain
+CORS_ALLOWED_ORIGINS = [
+    "https://trip-eld-f2vc.vercel.app/",
+    "http://localhost:5173",  # for local testing
+]
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

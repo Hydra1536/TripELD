@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  // baseURL: "http://127.0.0.1:8000/api",
+    baseURL: "https://tripeld.onrender.com/",
+
 });
 
 export const createTrip = (data) => API.post("/trips/create/", data);
