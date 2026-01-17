@@ -1,6 +1,6 @@
-# TripCop ELD Trip Planner
+# TripELD Trip Planner
 
-A cutting-edge Electronic Logging Device (ELD) trip planning application that revolutionizes route optimization and compliance for commercial drivers. Built with modern web technologies, TripCop provides real-time route planning, Hours of Service (HOS) calculations, and interactive visualizations to ensure safe and efficient trucking operations.
+A cutting-edge Electronic Logging Device (ELD) trip planning application that revolutionizes route optimization and compliance for commercial drivers. Built with modern web technologies, TripELD provides real-time route planning, Hours of Service (HOS) calculations, and interactive visualizations to ensure safe and efficient trucking operations.
 
 ## ✨ Features
 
@@ -56,7 +56,7 @@ A cutting-edge Electronic Logging Device (ELD) trip planning application that re
 ## 📁 Project Structure
 
 ```
-TripCop/
+TripELD/
 ├── backend/                          # Django Backend Application
 │   ├── core/                         # Django Project Configuration
 │   │   ├── __init__.py
