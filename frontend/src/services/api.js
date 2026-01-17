@@ -6,4 +6,4 @@ const API = axios.create({
 
 });
 
-export const createTrip = (data) => API.post("api/trips/create/", data);
+export const createTrip = (data) => API.post("/api/trips/create/", data);
