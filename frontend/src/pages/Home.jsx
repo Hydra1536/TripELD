@@ -50,7 +50,7 @@ const Home = () => {
       setRouteDistance(res.route_info?.total_distance_miles || 0);
     } catch (err) {
       console.error("Trip creation failed:", err);
-      alert("Failed to generate trip. Check backend.");
+      alert("Failed to generate trip. Enter correct informations.");
     } finally {
       setIsLoading(false);
     }
