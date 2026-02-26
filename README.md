@@ -158,12 +158,13 @@ The backend API will be available at `http://localhost:8000`
    npm run dev
    ```
 
-The frontend application will be available at `http://localhost:5173`
-Project Demonstration at YouTube `https://youtu.be/TILw58g7rEQ`
+The frontend application will be available at `http://localhost:5173`\
+
+Project Demonstration at YouTube- https://youtu.be/TILw58g7rEQ
 
 ## 📖 Usage
 
-1. **Access the Application**: Open `https://trip-eld-f2vc.vercel.app/` in your browser
+1. **Access the Application**: Open https://trip-eld-f2vc.vercel.app/ in your browser
 2. **Plan a Trip**:
    - Enter current location, pickup location, and drop-off location
    - Specify current cycle used hours
